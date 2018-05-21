@@ -2,8 +2,8 @@ export const createProductMarkup = (productModel) => {
   return `
     <article class="products-list-item product">
       <picture class="product-pic">
-        <a href="#" class="product-pic-number">10</a>
-        <img src="" width="120">
+        <a href="#" class="product-pic-number">${productModel.pictures.length}</a>
+        <img src="${productModel.pictures[0]}" width="120">
       </picture>
       <div class="product-description">
         <button class="product-favorite">Добавить в избранное</button>
