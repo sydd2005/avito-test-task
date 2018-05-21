@@ -23,7 +23,7 @@ const DataLoader = class {
   static async load() {
     try {
       const jsonResponse = await this.loadJson(config.PRODUCTS_URL);
-      return Promise.all(jsonResponse.data.slice(0, 19).map(async (product) => {
+      return Promise.all(jsonResponse.data.slice(0, 5).map(async (product) => {
         product.address = await CoordinatesConverter.toShortAddress(product.address.lat, product.address.lng);
         return product;
       }));

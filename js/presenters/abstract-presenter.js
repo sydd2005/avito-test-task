@@ -14,7 +14,10 @@ const AbstractPresenter = class {
 
   show() {
     this._outlet.innerHTML = ``;
-    this._outlet.appendChild(this._view.element);
+    const childElement = document.createElement(`div`);
+    this._outlet.appendChild(childElement);
+    childElement.replaceWith(...this._view.elements);
+    this._view.elements = this._outlet.childNodes;
   }
 
 };

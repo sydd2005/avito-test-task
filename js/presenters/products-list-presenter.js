@@ -11,16 +11,21 @@ const ProductsListPresenter = class extends AbstractPresenter {
   }
 
   bind() {
-    setTimeout(() => {
+    setInterval(() => {
       const randomProductIndex = Math.floor(Math.random() * this._productsData.length);
-      const productElements = this._view.element.querySelectorAll(`.product`);
-      const targetElement = productElements[randomProductIndex];
+      const targetElement = this._view.elements[randomProductIndex];
       const targetImage = targetElement.querySelector(`.product-pic img`);
       const productImages = this._productsData[randomProductIndex].pictures.slice();
-      const currentImageIndex = productImages.indexOf(targetImage.src);
+      // const distinctImages = productImages.reduce((acc, cur) => {
+      //   if (acc.indexOf(cur) === -1) {
+      //     acc.push(cur);
+      //   }
+      //   return acc;
+      // }, []);
+      const currentImageIndex = productImages.indexOf(targetImage.src.replace(`http://`, `//`));
       const nextImageIndex = currentImageIndex === productImages.length - 1 ? 0 : currentImageIndex + 1;
       targetImage.src = productImages[nextImageIndex];
-    }, 3000);
+    }, 2500);
   }
 
 };
