@@ -1,5 +1,4 @@
 import config from "../config";
-import CoordinatesConverter from "./coordinates-converter";
 
 const checkStatus = (response) => {
   if (response.ok) {
@@ -23,10 +22,12 @@ const DataLoader = class {
   static async load() {
     try {
       const jsonResponse = await this.loadJson(config.PRODUCTS_URL);
-      return Promise.all(jsonResponse.data.slice(0, 5).map(async (product) => {
-        product.address = await CoordinatesConverter.toShortAddress(product.address.lat, product.address.lng);
-        return product;
-      }));
+      return Promise.resolve(jsonResponse.data
+      //   jsonResponse.data.slice(0, 5).map(async (product) => {
+      //   product.address = await CoordinatesConverter.toShortAddress(product.address.lat, product.address.lng);
+      //   return product;
+      // })
+      );
     } catch (error) {
       return Promise.reject(`Произошла ошибка в DataLoader.load(): ${error}`);
     }
