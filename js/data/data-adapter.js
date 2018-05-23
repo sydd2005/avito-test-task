@@ -3,6 +3,8 @@ import CoordinatesConverter from './coordinates-converter';
 
 const PRICE_BREAK_LIMIT = 5;
 const DIGIT_GROUP_SIZE = 3;
+const formatOptions = {style: `currency`, currency: `RUB`, maximumFractionDigits: 0, minimumFractionDigits: 0};
+const priceFormat = new Intl.NumberFormat(`ru-RU`, formatOptions);
 
 const removeDoublePictures = (pictures) => {
   return pictures.reduce((acc, cur) => {
@@ -19,14 +21,17 @@ const formatPrice = (price) => {
   }
   let priceString = price.toString(10);
   if (priceString.length > PRICE_BREAK_LIMIT) {
-    let digitGroups = [];
-    let currentDigitGroup;
-    while (priceString) {
-      currentDigitGroup = priceString.slice(-DIGIT_GROUP_SIZE);
-      priceString = priceString.slice(0, priceString.length - DIGIT_GROUP_SIZE);
-      digitGroups.unshift(currentDigitGroup);
-    }
-    return `${digitGroups.join(`&thinsp;`)}&nbsp;₽`;
+    // let digitGroups = [];
+    // let currentDigitGroup;
+    // while (priceString) {
+    //   currentDigitGroup = priceString.slice(-DIGIT_GROUP_SIZE);
+    //   priceString = priceString.slice(0, priceString.length - DIGIT_GROUP_SIZE);
+    //   digitGroups.unshift(currentDigitGroup);
+    // }
+    // return `${digitGroups.join(`&thinsp;`)}&nbsp;₽`;
+    priceString = priceFormat.format(price);
+    priceString = priceString.replace(/\u00a0/g, `\u2009`).replace(`\u2009₽`, `\u00a0₽`);
+    return priceString;
   }
   return `${price}&nbsp;₽`;
 };

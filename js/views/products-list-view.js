@@ -51,6 +51,7 @@ const ProductsListView = class extends AbstractView {
     this._imageSwapTimeout = setTimeout(() => {
       const randomProductIndex = this.getRandomProductIndex();
       const targetElement = this.elements[randomProductIndex];
+      const imagesContainer = targetElement.querySelector(`.product-pic`);
       const targetImage = targetElement.querySelector(`.product-pic img`);
       const productPictureUrls = this._viewData[randomProductIndex].pictures.slice();
       const currentImageIndex = productPictureUrls.indexOf(targetImage.src.replace(`http://`, `//`));
@@ -58,10 +59,13 @@ const ProductsListView = class extends AbstractView {
       const nextImage = new Image();
       nextImage.width = PRODUCT_IMAGE_WIDTH;
       nextImage.addEventListener(`load`, () => {
-        this.crossFadeImages(targetImage, nextImage);
-        this.startImageSwap();
+        this.crossFadeImages(imagesContainer, targetImage, nextImage)
+            .then(() => {
+              this.startImageSwap();
+            });
       });
-      targetImage.insertAdjacentElement(`afterend`, nextImage);
+      // targetImage.insertAdjacentElement(`afterend`, nextImage);
+      imagesContainer.appendChild(nextImage);
       nextImage.src = productPictureUrls[nextImageIndex];
     }, IMAGE_SWAP_DELAY);
   }
@@ -72,21 +76,28 @@ const ProductsListView = class extends AbstractView {
     }
   }
 
-  crossFadeImages(imageFrom, imageTo) {
-    imageTo.style.opacity = 0;
-    imageTo.style.position = `absolute`;
-    imageTo.style.zIndex = BOTTOM_LAYER_INDEX;
-    imageFrom.style.opacity = 1;
-    imageFrom.style.zIndex = MIDDLE_LAYER_INDEX;
-    imageFrom.style.position = `absolute`;
-    const crossFadeInterval = setInterval(() => {
-      imageFrom.style.opacity -= OPACITY_STEP;
-      imageTo.style.opacity = +imageTo.style.opacity + OPACITY_STEP;
-      if (imageFrom.style.opacity === `0`) {
-        clearInterval(crossFadeInterval);
-        imageFrom.remove();
-      }
-    }, CROSSFADE_TIME_STEP);
+  crossFadeImages(imageContainer, currentImage, nextImage) {
+    let nextImageOpacity = 0;
+    nextImage.style.opacity = nextImageOpacity;
+    nextImage.style.position = `absolute`;
+    nextImage.style.zIndex = BOTTOM_LAYER_INDEX;
+    currentImage.style.opacity = 1;
+    currentImage.style.zIndex = MIDDLE_LAYER_INDEX;
+    currentImage.style.position = `absolute`;
+    return new Promise((resolve) => {
+      const crossFadeInterval = setInterval(() => {
+        if (nextImageOpacity < 1) {
+          nextImageOpacity = +(nextImageOpacity + OPACITY_STEP).toFixed(1);
+          nextImage.style.opacity = nextImageOpacity;
+          currentImage.style.opacity = 1 - nextImageOpacity;
+        } else {
+          clearInterval(crossFadeInterval);
+          // currentImage.remove();
+          imageContainer.removeChild(currentImage);
+          resolve();
+        }
+      }, CROSSFADE_TIME_STEP);
+    });
   }
 
 };
