@@ -1,5 +1,6 @@
 import {cloneObject} from '../utils';
 import CoordinatesConverter from './coordinates-converter';
+import config from '../config';
 
 const PRICE_BREAK_LIMIT = 5;
 const FORMAT_OPTIONS = {style: `decimal`, maximumFractionDigits: 0, minimumFractionDigits: 0};
@@ -30,17 +31,45 @@ const formatPrice = (price, currencySymbol) => {
   return `${priceString}${NBSP_CHAR}${currencySymbol}`;
 };
 
+function* createGenerator(array) {
+  for (const item of array) {
+    yield item;
+  }
+}
+
+const mapWithDelay = async (sourceArray, delay, cb) => {
+  const generator = createGenerator(sourceArray);
+  const mapResult = [];
+  return new Promise((resolve) => {
+    let item = generator.next();
+    mapResult.push(cb(item.value));
+
+    const callbackInterval = setInterval(() => {
+      item = generator.next();
+      if (item.done) {
+        clearInterval(callbackInterval);
+        resolve(mapResult);
+      } else {
+        mapResult.push(cb(item.value));
+      }
+    }, delay);
+  });
+};
+
 const DataAdapter = class {
 
+  static async adaptProduct(product) {
+    const adaptedProduct = cloneObject(product);
+    adaptedProduct.shortAddress = await CoordinatesConverter.toShortAddress(product.address.lat, product.address.lng);
+    console.log(adaptedProduct.shortAddress);
+    adaptedProduct.pictures = removeDoublePictures(product.pictures);
+    adaptedProduct.price = formatPrice(product.price, RUB_SYMBOL);
+    return adaptedProduct;
+  }
+
   static async adaptForList(productsData) {
-    let adaptedData = cloneObject(productsData);
-    adaptedData = Promise.all(adaptedData.map(async (product) => {
-      product.shortAddress = await CoordinatesConverter.toShortAddress(product.address.lat, product.address.lng);
-      product.pictures = removeDoublePictures(product.pictures);
-      product.price = formatPrice(product.price, RUB_SYMBOL);
-      return product;
-    }));
-    return adaptedData;
+    const adaptedData = await mapWithDelay(productsData, config.GEOCODE_CONSEQUENT_REQUEST_DELAY, this.adaptProduct);
+    return Promise.all(adaptedData);
   }
 
 };
