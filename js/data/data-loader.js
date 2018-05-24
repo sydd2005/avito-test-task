@@ -22,12 +22,7 @@ const DataLoader = class {
   static async load() {
     try {
       const jsonResponse = await this.loadJson(config.PRODUCTS_URL);
-      return Promise.resolve(jsonResponse.data
-      //   jsonResponse.data.slice(0, 5).map(async (product) => {
-      //   product.address = await CoordinatesConverter.toShortAddress(product.address.lat, product.address.lng);
-      //   return product;
-      // })
-      );
+      return Promise.resolve(jsonResponse.data);
     } catch (error) {
       return Promise.reject(`Произошла ошибка в DataLoader.load(): ${error}`);
     }

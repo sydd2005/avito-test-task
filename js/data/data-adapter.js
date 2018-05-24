@@ -2,9 +2,13 @@ import {cloneObject} from '../utils';
 import CoordinatesConverter from './coordinates-converter';
 
 const PRICE_BREAK_LIMIT = 5;
-const DIGIT_GROUP_SIZE = 3;
-const formatOptions = {style: `currency`, currency: `RUB`, maximumFractionDigits: 0, minimumFractionDigits: 0};
-const priceFormat = new Intl.NumberFormat(`ru-RU`, formatOptions);
+const FORMAT_OPTIONS = {style: `decimal`, maximumFractionDigits: 0, minimumFractionDigits: 0};
+const NBSP_CHAR = `\u00a0`;
+const THINSP_CHAR = `\u2009`;
+const NBSP_REGEXP = new RegExp(NBSP_CHAR, `g`);
+const RUB_SYMBOL = `₽`;
+
+const ruNumberFormatter = new Intl.NumberFormat(`ru-RU`, FORMAT_OPTIONS);
 
 const removeDoublePictures = (pictures) => {
   return pictures.reduce((acc, cur) => {
@@ -15,35 +19,25 @@ const removeDoublePictures = (pictures) => {
   }, []);
 };
 
-const formatPrice = (price) => {
+const formatPrice = (price, currencySymbol) => {
   if (!price) {
     return `Цена не указана`;
   }
   let priceString = price.toString(10);
   if (priceString.length > PRICE_BREAK_LIMIT) {
-    // let digitGroups = [];
-    // let currentDigitGroup;
-    // while (priceString) {
-    //   currentDigitGroup = priceString.slice(-DIGIT_GROUP_SIZE);
-    //   priceString = priceString.slice(0, priceString.length - DIGIT_GROUP_SIZE);
-    //   digitGroups.unshift(currentDigitGroup);
-    // }
-    // return `${digitGroups.join(`&thinsp;`)}&nbsp;₽`;
-    priceString = priceFormat.format(price);
-    priceString = priceString.replace(/\u00a0/g, `\u2009`).replace(`\u2009₽`, `\u00a0₽`);
-    return priceString;
+    priceString = ruNumberFormatter.format(price).replace(NBSP_REGEXP, THINSP_CHAR);
   }
-  return `${price}&nbsp;₽`;
+  return `${priceString}${NBSP_CHAR}${currencySymbol}`;
 };
 
 const DataAdapter = class {
 
   static async adaptForList(productsData) {
     let adaptedData = cloneObject(productsData);
-    adaptedData = Promise.all(adaptedData.slice(0, 5).map(async (product) => {
+    adaptedData = Promise.all(adaptedData.map(async (product) => {
       product.shortAddress = await CoordinatesConverter.toShortAddress(product.address.lat, product.address.lng);
       product.pictures = removeDoublePictures(product.pictures);
-      product.price = formatPrice(product.price);
+      product.price = formatPrice(product.price, RUB_SYMBOL);
       return product;
     }));
     return adaptedData;
