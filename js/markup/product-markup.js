@@ -9,7 +9,6 @@ export const createProductMarkup = (productModel) => {
         <button class="product-favorite">Добавить в избранное</button>
         <h3 class="product-title"><a href="#">${productModel.title}</a></h3>
         <p class="product-price">${productModel.price}</p>
-        <!-- ${JSON.stringify(productModel.address)} -->
         <p class="product-address">${productModel.shortAddress}</p>
         <p class="product-date">три дня назад</p>
       </div>

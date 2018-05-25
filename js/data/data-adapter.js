@@ -31,26 +31,28 @@ const formatPrice = (price, currencySymbol) => {
   return `${priceString}${NBSP_CHAR}${currencySymbol}`;
 };
 
-function* createGenerator(array) {
-  for (const item of array) {
-    yield item;
-  }
-}
+// function* createGenerator(array) {
+//   for (const item of array) {
+//     yield item;
+//   }
+// }
 
 const mapWithDelay = async (sourceArray, delay, cb) => {
-  const generator = createGenerator(sourceArray);
+  // const generator = createGenerator(sourceArray);
+  let i = 0;
   const mapResult = [];
   return new Promise((resolve) => {
-    let item = generator.next();
-    mapResult.push(cb(item.value));
+    // let item = generator.next();
+    mapResult.push(cb(sourceArray[i++]));
 
     const callbackInterval = setInterval(() => {
-      item = generator.next();
-      if (item.done) {
+      // item = generator.next();
+      if (i < sourceArray.length) {
+        mapResult.push(cb(sourceArray[i]));
+        i++;
+      } else {
         clearInterval(callbackInterval);
         resolve(mapResult);
-      } else {
-        mapResult.push(cb(item.value));
       }
     }, delay);
   });
