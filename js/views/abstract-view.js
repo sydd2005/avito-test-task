@@ -3,16 +3,6 @@ const AbstractView = class AbstractView {
     throw new Error(`Абстрактный метод должен быть переопределен в наследниках!`);
   }
 
-  render() {
-    const domParser = new DOMParser();
-    const doc = domParser.parseFromString(this.template, `text/html`);
-    return doc.body.childNodes;
-  }
-
-  bind() {
-    // наследник может добавлять логику обработки событий
-  }
-
   get elements() {
     if (!this._elements) {
       this._elements = this.render();
@@ -24,6 +14,17 @@ const AbstractView = class AbstractView {
   set elements(nodes) {
     this._elements = nodes;
   }
+
+  render() {
+    const domParser = new DOMParser();
+    const doc = domParser.parseFromString(this.template, `text/html`);
+    return doc.body.childNodes;
+  }
+
+  bind() {
+    // наследник может добавлять логику обработки событий
+  }
+
 };
 
 export default AbstractView;

@@ -3,6 +3,7 @@ const config = {
   GEOCODE_URL_BASE: `https://maps.googleapis.com/maps/api/geocode/json`,
   GEOCODE_KEY: `AIzaSyAMg9lI7Ox-AjTM3j3vT_LupmaG37jXAnA`,
   GEOCODE_CONSEQUENT_REQUEST_DELAY: 21,
+  LOCALSTORAGE_KEY: `avito-test-task-favorites`,
 };
 
 export default config;

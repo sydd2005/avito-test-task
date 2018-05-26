@@ -1,6 +1,6 @@
 import AbstractView from "./abstract-view";
 import {createProductsListMarkup} from "../markup/products-list-markup";
-import {generateRandomIndex} from "../utils";
+import {generateRandomIndex, addDelegatedEventListener} from "../utils";
 
 const TOP_LAYER_INDEX = 30;
 const MIDDLE_LAYER_INDEX = 20;
@@ -64,7 +64,6 @@ const ProductsListView = class extends AbstractView {
               this.startImageSwap();
             });
       });
-      // targetImage.insertAdjacentElement(`afterend`, nextImage);
       imagesContainer.appendChild(nextImage);
       nextImage.src = productPictureUrls[nextImageIndex];
     }, IMAGE_SWAP_DELAY);
@@ -92,13 +91,20 @@ const ProductsListView = class extends AbstractView {
           currentImage.style.opacity = 1 - nextImageOpacity;
         } else {
           clearInterval(crossFadeInterval);
-          // currentImage.remove();
           imageContainer.removeChild(currentImage);
           resolve();
         }
       }, CROSSFADE_TIME_STEP);
     });
   }
+
+  bind() {
+    addDelegatedEventListener(`click`, `.product-favorite`, (eventTarget) => {
+      this.onAddToFavoritesClick(eventTarget.dataset[`productId`]);
+    });
+  }
+
+  onAddToFavoritesClick() {}
 
 };
 

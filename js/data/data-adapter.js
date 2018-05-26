@@ -31,45 +31,39 @@ const formatPrice = (price, currencySymbol) => {
   return `${priceString}${NBSP_CHAR}${currencySymbol}`;
 };
 
-// function* createGenerator(array) {
-//   for (const item of array) {
-//     yield item;
-//   }
-// }
-
 const mapWithDelay = async (sourceArray, delay, cb) => {
-  // const generator = createGenerator(sourceArray);
-  let i = 0;
-  const mapResult = [];
   return new Promise((resolve) => {
-    // let item = generator.next();
-    mapResult.push(cb(sourceArray[i++]));
+    let i = 0;
+    const destArray = [];
+    destArray.push(cb(sourceArray[i++]));
 
     const callbackInterval = setInterval(() => {
-      // item = generator.next();
       if (i < sourceArray.length) {
-        mapResult.push(cb(sourceArray[i]));
+        destArray.push(cb(sourceArray[i]));
         i++;
       } else {
         clearInterval(callbackInterval);
-        resolve(mapResult);
+        resolve(destArray);
       }
     }, delay);
   });
 };
+
+let favorites = [];
 
 const DataAdapter = class {
 
   static async adaptProduct(product) {
     const adaptedProduct = cloneObject(product);
     adaptedProduct.shortAddress = await CoordinatesConverter.toShortAddress(product.address.lat, product.address.lng);
-    console.log(adaptedProduct.shortAddress);
     adaptedProduct.pictures = removeDoublePictures(product.pictures);
     adaptedProduct.price = formatPrice(product.price, RUB_SYMBOL);
+    adaptedProduct.isFavorite = favorites.includes(product.id);
     return adaptedProduct;
   }
 
   static async adaptForList(productsData) {
+    favorites = JSON.parse(localStorage.getItem(config.LOCALSTORAGE_KEY));
     const adaptedData = await mapWithDelay(productsData, config.GEOCODE_CONSEQUENT_REQUEST_DELAY, this.adaptProduct);
     return Promise.all(adaptedData);
   }
