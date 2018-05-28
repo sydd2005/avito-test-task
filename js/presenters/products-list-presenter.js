@@ -10,6 +10,7 @@ const ProductsListPresenter = class extends AbstractPresenter {
     this._model = new ProductsListModel(productsData);
     this._view = new ProductsListView([]);
     this.bind();
+    this._model.adaptData();
   }
 
   bind() {
@@ -18,9 +19,9 @@ const ProductsListPresenter = class extends AbstractPresenter {
       this.show();
     };
 
-    this._model.adaptData();
-
-    this._view.onAddToFavoritesClick = (productId) => {
+    this._view.onAddToFavoritesClick = (addToFavoritesButton) => {
+      addToFavoritesButton.style.textShadow = `3px 0 4px red, -3px 0 4px red, 0 -3px 4px red, 0 3px 4px red`;
+      const productId = addToFavoritesButton.dataset[`productId`];
       const favorites = JSON.parse(localStorage.getItem(config.LOCALSTORAGE_KEY)) || [];
       if (favorites.indexOf(productId) === -1) {
         favorites.push(productId);

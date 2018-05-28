@@ -100,7 +100,7 @@ const ProductsListView = class extends AbstractView {
 
   bind() {
     addDelegatedEventListener(`click`, `.product-favorite`, (eventTarget) => {
-      this.onAddToFavoritesClick(eventTarget.dataset[`productId`]);
+      this.onAddToFavoritesClick(eventTarget);
     });
   }
 
