@@ -57,13 +57,13 @@ const DataAdapter = class {
     const adaptedProduct = cloneObject(product);
     adaptedProduct.shortAddress = await CoordinatesConverter.toShortAddress(product.address.lat, product.address.lng);
     adaptedProduct.pictures = removeDoublePictures(product.pictures);
-    adaptedProduct.price = formatPrice(product.price, RUB_SYMBOL);
+    adaptedProduct.formattedPrice = formatPrice(product.price, RUB_SYMBOL);
     adaptedProduct.isFavorite = favorites.includes(product.id);
     return adaptedProduct;
   }
 
   static async adaptForList(productsData) {
-    favorites = JSON.parse(localStorage.getItem(config.LOCALSTORAGE_KEY));
+    favorites = JSON.parse(localStorage.getItem(config.LOCALSTORAGE_KEY)) || [];
     const adaptedData = await mapWithDelay(productsData, config.GEOCODE_CONSEQUENT_REQUEST_DELAY, this.adaptProduct);
     return Promise.all(adaptedData);
   }

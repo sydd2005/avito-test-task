@@ -10,7 +10,13 @@ const ProductsFilterView = class extends AbstractView {
 
   bind() {
     addDelegatedEventListener(`change`, `.products-filter`, (eventTarget) => {
-      history.pushState({favorites: [`3`, `4`, `5`]}, `filter-change`, `filter?favorites=3,4,5`);
+      // history.pushState({favorites: [`3`, `4`, `5`]}, `filter-change`, `?favorites=3,4,5`);
+      const filterEntries = (new FormData(eventTarget)).entries();
+      const filterItems = [];
+      for (const entry of filterEntries) {
+        filterItems.push(`${entry[0]}=${entry[1]}`);
+      }
+      location.hash = filterItems.join(`&`);
     });
   }
 

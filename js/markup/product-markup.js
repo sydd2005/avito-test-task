@@ -11,7 +11,7 @@ export const createProductMarkup = (productModel) => {
       <div class="product-description">
         <button class="product-favorite" data-product-id="${productModel.id}" ${favoriteStyle}>Добавить в избранное</button>
         <h3 class="product-title"><a href="#">${productModel.title}</a></h3>
-        <p class="product-price">${productModel.price}</p>
+        <p class="product-price">${productModel.formattedPrice}</p>
         <p class="product-address">${productModel.shortAddress}</p>
         <p class="product-date">три дня назад</p>
       </div>

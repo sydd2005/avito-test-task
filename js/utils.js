@@ -18,3 +18,17 @@ export const addDelegatedEventListener = (eventType, targetSelector, eventHandle
     }
   });
 };
+
+export const getQueryParams = (queryString) => {
+  if (!queryString) {
+    return {};
+  }
+
+  return (/^[?#]/.test(queryString) ? queryString.slice(1) : queryString)
+      .split(`&`)
+      .reduce((params, param) => {
+        let [key, value] = param.split(`=`);
+        params[key] = value ? decodeURIComponent(value.replace(/\+/g, ` `)) : ``;
+        return params;
+      }, {});
+};
