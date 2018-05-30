@@ -2,7 +2,7 @@ import AbstractPresenter from "./abstract-presenter";
 import ProductsListView from "../views/products-list-view";
 import ProductsListModel from "../models/products-list-model";
 import config from "../config";
-import {getQueryParams} from "../utils";
+import {isEmpty, getQueryParams} from "../utils";
 
 const ProductsListPresenter = class extends AbstractPresenter {
 
@@ -34,9 +34,11 @@ const ProductsListPresenter = class extends AbstractPresenter {
       localStorage.setItem(config.LOCALSTORAGE_KEY, JSON.stringify(favorites));
     };
 
-    addEventListener(`hashchange`, () => {
+    window.addEventListener(`hashchange`, () => {
       const queryParams = getQueryParams(location.hash);
-      this._model.query(queryParams);
+      if (!isEmpty(queryParams)) {
+        this._model.query(queryParams);
+      }
     });
   }
 

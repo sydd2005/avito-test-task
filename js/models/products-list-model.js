@@ -1,26 +1,6 @@
 import DataAdapter from "../data/data-adapter";
 import {cloneObject} from "../utils";
-
-const QUERY_PARAM_TYPE = {
-  FAVORITE: `is-favorite`,
-  CATEGORY: `category`,
-  MAX_PRICE: `price-range`,
-  SORT: `sort`,
-};
-
-const CATEGORY = {
-  ALL: `all`,
-  AUTO: `auto`,
-  CAMERAS: `cameras`,
-  IMMOVABLE: `immovable`,
-  LAPTOPS: `laptops`,
-};
-
-const SORT_TYPE = {
-  POPULAR: `popular`,
-  CHEAP: `cheap-first`,
-  EXPENSIVE: `expensive-first`
-};
+import {SORT_TYPE, QUERY_PARAM_TYPE, CATEGORY} from "../data/filters";
 
 const COMPARE_FUNCTION = {
   [SORT_TYPE.CHEAP]: (first, second) => {
