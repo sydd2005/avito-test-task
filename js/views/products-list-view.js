@@ -40,9 +40,21 @@ const ProductsListView = class extends AbstractView {
 
   getRandomProductIndex() {
     let randomProductIndex;
-    do {
-      randomProductIndex = generateRandomIndex(this._viewData.length);
-    } while (randomProductIndex === this._currentProductIndex);
+    const productCount = this._viewData.length;
+    switch (productCount) {
+      case 0:
+        randomProductIndex = -1;
+        break;
+      case 1:
+        randomProductIndex = 0;
+        break;
+      default:
+        do {
+          randomProductIndex = generateRandomIndex(this._viewData.length);
+        } while (randomProductIndex === this._currentProductIndex);
+        break;
+    }
+
     this._currentProductIndex = randomProductIndex;
     return randomProductIndex;
   }
@@ -50,22 +62,24 @@ const ProductsListView = class extends AbstractView {
   startImageSwap() {
     this._imageSwapTimeout = setTimeout(() => {
       const randomProductIndex = this.getRandomProductIndex();
-      const targetElement = this.element.querySelectorAll(`.product`)[randomProductIndex];
-      const imagesContainer = targetElement.querySelector(`.product-pic`);
-      const targetImage = targetElement.querySelector(`.product-pic img`);
-      const productPictureUrls = this._viewData[randomProductIndex].pictures.slice();
-      const currentImageIndex = productPictureUrls.indexOf(targetImage.src.replace(`http://`, `//`));
-      const nextImageIndex = currentImageIndex === productPictureUrls.length - 1 ? 0 : currentImageIndex + 1;
-      const nextImage = new Image();
-      nextImage.width = PRODUCT_IMAGE_WIDTH;
-      nextImage.addEventListener(`load`, () => {
-        this.crossFadeImages(imagesContainer, targetImage, nextImage)
-            .then(() => {
-              this.startImageSwap();
-            });
-      });
-      imagesContainer.appendChild(nextImage);
-      nextImage.src = productPictureUrls[nextImageIndex];
+      if (randomProductIndex >= 0) {
+        const targetElement = this.element.querySelectorAll(`.product`)[randomProductIndex];
+        const imagesContainer = targetElement.querySelector(`.product-pic`);
+        const targetImage = targetElement.querySelector(`.product-pic img`);
+        const productPictureUrls = this._viewData[randomProductIndex].pictures.slice();
+        const currentImageIndex = productPictureUrls.indexOf(targetImage.src.replace(`http://`, `//`));
+        const nextImageIndex = currentImageIndex === productPictureUrls.length - 1 ? 0 : currentImageIndex + 1;
+        const nextImage = new Image();
+        nextImage.width = PRODUCT_IMAGE_WIDTH;
+        nextImage.addEventListener(`load`, () => {
+          this.crossFadeImages(imagesContainer, targetImage, nextImage)
+              .then(() => {
+                this.startImageSwap();
+              });
+        });
+        imagesContainer.appendChild(nextImage);
+        nextImage.src = productPictureUrls[nextImageIndex];
+      }
     }, IMAGE_SWAP_DELAY);
   }
 
@@ -83,18 +97,22 @@ const ProductsListView = class extends AbstractView {
     currentImage.style.opacity = 1;
     currentImage.style.zIndex = MIDDLE_LAYER_INDEX;
     currentImage.style.position = `absolute`;
+    let crossFadeInterval;
     return new Promise((resolve) => {
-      const crossFadeInterval = setInterval(() => {
+      const doCrossFadeIteration = () => {
         if (nextImageOpacity < 1) {
           nextImageOpacity = +(nextImageOpacity + OPACITY_STEP).toFixed(1);
           nextImage.style.opacity = nextImageOpacity;
           currentImage.style.opacity = 1 - nextImageOpacity;
         } else {
-          clearInterval(crossFadeInterval);
+          if (crossFadeInterval) {
+            clearInterval(crossFadeInterval);
+          }
           imageContainer.removeChild(currentImage);
           resolve();
         }
-      }, CROSSFADE_TIME_STEP);
+      };
+      crossFadeInterval = setInterval(doCrossFadeIteration, CROSSFADE_TIME_STEP);
     });
   }
 

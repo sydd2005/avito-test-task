@@ -1,6 +1,7 @@
 import DataAdapter from "../data/data-adapter";
 import {cloneObject} from "../utils";
 import {SORT_TYPE, QUERY_PARAM_TYPE, CATEGORY} from "../data/filters";
+import config from "../config";
 
 const COMPARE_FUNCTION = {
   [SORT_TYPE.CHEAP]: (first, second) => {
@@ -45,6 +46,13 @@ const ProductsListModel = class {
       resultData = sortType === SORT_TYPE.POPULAR ? resultData : resultData.sort(COMPARE_FUNCTION[sortType]);
     }
     this.onDataChange(resultData);
+  }
+
+  refreshFavorites() {
+    const favorites = JSON.parse(localStorage.getItem(config.LOCALSTORAGE_KEY)) || [];
+    this._adaptedData.forEach((product) => {
+      product.isFavorite = favorites.includes(product.id);
+    });
   }
 
   onDataChange() {}

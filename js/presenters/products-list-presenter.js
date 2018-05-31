@@ -32,6 +32,7 @@ const ProductsListPresenter = class extends AbstractPresenter {
         addToFavoritesButton.style.removeProperty(`text-shadow`);
       }
       localStorage.setItem(config.LOCALSTORAGE_KEY, JSON.stringify(favorites));
+      this._model.refreshFavorites();
     };
 
     window.addEventListener(`hashchange`, () => {
