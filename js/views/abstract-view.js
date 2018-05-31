@@ -3,22 +3,22 @@ const AbstractView = class AbstractView {
     throw new Error(`Абстрактный метод должен быть переопределен в наследниках!`);
   }
 
-  get elements() {
-    if (!this._elements) {
-      this._elements = this.render();
-      this.bind(this._elements);
+  get element() {
+    if (!this._element) {
+      this._element = this.render();
+      this.bind(this._element);
     }
-    return this._elements;
+    return this._element;
   }
 
-  set elements(nodes) {
-    this._elements = nodes;
+  set element(node) {
+    this._element = node;
   }
 
   render() {
     const domParser = new DOMParser();
     const doc = domParser.parseFromString(this.template, `text/html`);
-    return doc.body.childNodes;
+    return doc.body.firstChild;
   }
 
   bind() {

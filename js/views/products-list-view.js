@@ -28,12 +28,12 @@ const ProductsListView = class extends AbstractView {
     productNumberElements.forEach((element) => {
       element.style.zIndex = TOP_LAYER_INDEX;
     });
-    return doc.body.childNodes;
+    return doc.body.firstChild;
   }
 
   changeData(viewData) {
     this._viewData = viewData;
-    this._elements = this.render();
+    this._element = this.render();
     this.stopImageSwap();
     this.startImageSwap();
   }
@@ -41,7 +41,7 @@ const ProductsListView = class extends AbstractView {
   getRandomProductIndex() {
     let randomProductIndex;
     do {
-      randomProductIndex = generateRandomIndex(this.elements.length);
+      randomProductIndex = generateRandomIndex(this._viewData.length);
     } while (randomProductIndex === this._currentProductIndex);
     this._currentProductIndex = randomProductIndex;
     return randomProductIndex;
@@ -50,7 +50,7 @@ const ProductsListView = class extends AbstractView {
   startImageSwap() {
     this._imageSwapTimeout = setTimeout(() => {
       const randomProductIndex = this.getRandomProductIndex();
-      const targetElement = this.elements[randomProductIndex];
+      const targetElement = this.element.querySelectorAll(`.product`)[randomProductIndex];
       const imagesContainer = targetElement.querySelector(`.product-pic`);
       const targetImage = targetElement.querySelector(`.product-pic img`);
       const productPictureUrls = this._viewData[randomProductIndex].pictures.slice();

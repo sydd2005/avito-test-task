@@ -1,9 +1,13 @@
 import {createProductMarkup} from "./product-markup";
 
 export const createProductsListMarkup = (products) => {
-  return products.reduce((acc, curProduct) => {
+  const productsMarkup = products.reduce((acc, curProduct) => {
     return acc + createProductMarkup(curProduct);
   }, ``);
+  return `
+  <section class="layout-main products-list">
+    ${productsMarkup}
+  </section>`.trim();
 };
 
 //     `

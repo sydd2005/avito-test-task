@@ -1,5 +1,7 @@
 export const createProductsFilterMarkup = () => {
-  return `<form class="products-filter">
+  return `
+  <aside class="layout-sidebar">
+  <form class="products-filter">
   <fieldset class="products-filter-group radiogroup products-filter-favorite">
     <input type="checkbox" name="is-favorite" id="favorite">
     <label class="radiogroup-item" for="favorite">Показывать избранные</label>
@@ -38,5 +40,6 @@ export const createProductsFilterMarkup = () => {
   </fieldset>
 
   <button class="products-filter-submit" type="submit">Показать</button>
-</form>`.trim();
+</form>
+</aside>`.trim();
 };
