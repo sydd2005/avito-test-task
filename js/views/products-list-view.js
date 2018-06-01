@@ -60,7 +60,7 @@ const ProductsListView = class extends AbstractView {
   }
 
   startImageSwap() {
-    this._imageSwapTimeout = setTimeout(() => {
+    const currentSwapTimeout = setTimeout(() => {
       const randomProductIndex = this.getRandomProductIndex();
       if (randomProductIndex >= 0) {
         const targetElement = this.element.querySelectorAll(`.product`)[randomProductIndex];
@@ -74,13 +74,16 @@ const ProductsListView = class extends AbstractView {
         nextImage.addEventListener(`load`, () => {
           this.crossFadeImages(imagesContainer, targetImage, nextImage)
               .then(() => {
-                this.startImageSwap();
+                if (currentSwapTimeout === this._imageSwapTimeout) {
+                  this.startImageSwap();
+                }
               });
         });
         imagesContainer.appendChild(nextImage);
         nextImage.src = productPictureUrls[nextImageIndex];
       }
     }, IMAGE_SWAP_DELAY);
+    this._imageSwapTimeout = currentSwapTimeout;
   }
 
   stopImageSwap() {
