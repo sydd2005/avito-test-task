@@ -6,6 +6,11 @@ import serialize from "form-serialize";
 
 const ProductsFilterView = class extends AbstractView {
 
+  constructor() {
+    super();
+    this.disableAllFilters();
+  }
+
   get template() {
     return createProductsFilterMarkup();
   }
@@ -22,15 +27,22 @@ const ProductsFilterView = class extends AbstractView {
     });
   }
 
+  disableAllFilters() {
+    const formControls = this.element.querySelectorAll(`[name]`);
+    for (const control of formControls) {
+      control.setAttribute(`disabled`, `disabled`);
+    }
+  }
+
   disableAllFiltersExceptFavorites() {
-    const formControls = this._element.querySelectorAll(`[name]:not([name=${QUERY_PARAM_TYPE.FAVORITE}])`);
+    const formControls = this.element.querySelectorAll(`[name]:not([name=${QUERY_PARAM_TYPE.FAVORITE}])`);
     for (const control of formControls) {
       control.setAttribute(`disabled`, `disabled`);
     }
   }
 
   enableAllFilters() {
-    const formControls = this._element.querySelectorAll(`[name]`);
+    const formControls = this.element.querySelectorAll(`[name]`);
     for (const control of formControls) {
       control.removeAttribute(`disabled`);
     }
