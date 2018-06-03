@@ -1,4 +1,3 @@
-import DataAdapter from "../data/data-adapter";
 import {cloneObject} from "../utils";
 import {SORT_TYPE, QUERY_PARAM_TYPE, CATEGORY} from "../data/filters";
 import config from "../config";
@@ -27,17 +26,17 @@ const COMPARE_FUNCTION = {
 
 const ProductsListModel = class {
 
-  constructor(data) {
-    this._rawData = data;
+  constructor() {
+    this._products = [];
   }
 
-  async adaptData() {
-    this._adaptedData = await DataAdapter.adaptForList(this._rawData);
-    this.onDataChange(this._adaptedData);
+  changeData(data) {
+    this._products = data;
+    this.onDataChange(data);
   }
 
   query(queryParams) {
-    let resultData = cloneObject(this._adaptedData);
+    let resultData = cloneObject(this._products);
     if (queryParams[QUERY_PARAM_TYPE.FAVORITE]) {
       resultData = resultData.filter((item) => item.isFavorite);
     } else {
@@ -50,7 +49,7 @@ const ProductsListModel = class {
 
   refreshFavorites() {
     const favorites = JSON.parse(localStorage.getItem(config.LOCALSTORAGE_KEY)) || [];
-    this._adaptedData.forEach((product) => {
+    this._products.forEach((product) => {
       product.isFavorite = favorites.includes(product.id);
     });
   }

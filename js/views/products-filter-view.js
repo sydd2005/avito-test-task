@@ -1,8 +1,14 @@
 import AbstractView from "./abstract-view";
 import {createProductsFilterMarkup} from "../markup/products-filter-markup";
 import {addDelegatedEventListener} from "../utils";
-import {QUERY_PARAM_TYPE} from "../data/filters";
+import {QUERY_PARAM_TYPE, SPECIFIC_CATEGORY_FILTERS} from "../data/filters";
 import serialize from "form-serialize";
+import config from "../config";
+import SpecificFiltersView from "./specific-filters-view";
+
+const normalizePrice = (price) => {
+  return price - price % config.PRICE_STEP + config.PRICE_STEP;
+};
 
 const ProductsFilterView = class extends AbstractView {
 
@@ -46,6 +52,35 @@ const ProductsFilterView = class extends AbstractView {
     for (const control of formControls) {
       control.removeAttribute(`disabled`);
     }
+  }
+
+  setPriceBounds(minPrice, maxPrice) {
+    const minPriceSpan = this.element.querySelector(`.price-range-min`);
+    const maxPriceSpan = this.element.querySelector(`.price-range-max`);
+    const priceRangeInput = this.element.querySelector(`[name=price-range]`);
+    const normalizedMinPrice = normalizePrice(minPrice);
+    const normalizedMaxPrice = normalizePrice(maxPrice);
+    minPriceSpan.innerText = normalizedMinPrice;
+    maxPriceSpan.innerText = normalizedMaxPrice;
+    priceRangeInput.min = normalizedMinPrice;
+    priceRangeInput.max = normalizedMaxPrice;
+    priceRangeInput.value = normalizedMaxPrice;
+    priceRangeInput.step = config.PRICE_STEP;
+  }
+
+  removeSpecificFilters() {
+    const specificFilters = this.element.querySelectorAll(`.specific-filters`);
+    for (const filter of specificFilters) {
+      filter.parentNode.removeChild(filter);
+    }
+  }
+
+  addSpecificFilters(queryParams) {
+    const categoryElement = this.element.querySelector(`#category`);
+    const productCategory = queryParams[QUERY_PARAM_TYPE.CATEGORY];
+    this.removeSpecificFilters();
+    const filterDefinitions = SPECIFIC_CATEGORY_FILTERS[productCategory];
+    categoryElement.insertAdjacentElement(`afterend`, (new SpecificFiltersView(filterDefinitions)).element);
   }
 
 };

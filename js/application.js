@@ -1,7 +1,6 @@
 import ProductsListPresenter from "./presenters/products-list-presenter";
 import ProductsFilterPresenter from "./presenters/products-filter-presenter";
-import DataLoader from "./data/data-loader";
-import ProductsFilterModel from "./models/products-filter-model";
+import ProductsService from "./services/products-service";
 
 const productsListOutlet = document.querySelector(`.products-list`);
 const productsFilterOutlet = document.querySelector(`.layout-sidebar`);
@@ -9,13 +8,12 @@ const productsFilterOutlet = document.querySelector(`.layout-sidebar`);
 const Application = class {
 
   static async start() {
-    const productsFilterModel = new ProductsFilterModel();
-    const productsFilterPresenter = new ProductsFilterPresenter(productsFilterOutlet, productsFilterModel);
-    const productsData = await DataLoader.load();
-    const productListPresenter = new ProductsListPresenter(productsListOutlet, productsData);
+    const productsService = new ProductsService();
+    const productsFilterPresenter = new ProductsFilterPresenter(productsFilterOutlet, productsService);
+    const productListPresenter = new ProductsListPresenter(productsListOutlet, productsService);
     productsFilterPresenter.show();
-    productsFilterModel.onDataLoaded();
     productListPresenter.show();
+    productsService.getProducts();
   }
 
 };

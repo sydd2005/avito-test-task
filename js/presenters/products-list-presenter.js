@@ -6,15 +6,20 @@ import {isEmpty, getQueryParams} from "../utils";
 
 const ProductsListPresenter = class extends AbstractPresenter {
 
-  constructor(outlet, productsData) {
+  constructor(outlet, productsService) {
     super(outlet);
-    this._model = new ProductsListModel(productsData);
-    this._view = new ProductsListView([]);
+    this._productsService = productsService;
+    this._model = new ProductsListModel();
+    this._view = new ProductsListView();
     this.bind();
-    this._model.adaptData();
+    // this._model.adaptData();
   }
 
   bind() {
+    this._productsService.subscribe((data) => {
+      this._model.changeData(data);
+    });
+
     this._model.onDataChange = (data) => {
       this._view.changeData(data);
       this.show();

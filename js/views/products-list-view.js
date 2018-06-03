@@ -12,9 +12,9 @@ const IMAGE_SWAP_DELAY = 3000;
 
 const ProductsListView = class extends AbstractView {
 
-  constructor(viewData) {
+  constructor() {
     super();
-    this._viewData = viewData;
+    this._viewData = [];
   }
 
   get template() {

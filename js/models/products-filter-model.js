@@ -1,6 +1,8 @@
 const ProductsFilterModel = class {
 
-  onDataLoaded() {}
+  constructor() {
+    this.queryParams = {};
+  }
 
 };
 

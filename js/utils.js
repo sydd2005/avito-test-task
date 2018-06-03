@@ -32,7 +32,8 @@ export const getQueryParams = (queryString) => {
       .split(`&`)
       .reduce((params, param) => {
         let [key, value] = param.split(`=`);
-        params[key] = value ? decodeURIComponent(value.replace(/\+/g, ` `)) : ``;
+        value = value ? decodeURIComponent(value.replace(/\+/g, ` `)) : ``;
+        params[key] = params.hasOwnProperty(key) ? [value].concat(params[key]) : value;
         return params;
       }, {});
 };
