@@ -60,7 +60,7 @@ const ProductsListModel = class {
       }
 
       const maxPriceParam = queryParams[QUERY_PARAM_TYPE.MAX_PRICE];
-      resultData = resultData.filter((product) => product.price <= maxPriceParam);
+      resultData = resultData.filter((product) => !product.price || product.price <= maxPriceParam);
 
       const sortType = queryParams[QUERY_PARAM_TYPE.SORT];
       resultData = sortType === SORT_TYPE.POPULAR ? resultData : resultData.sort(COMPARE_FUNCTION[sortType]);
