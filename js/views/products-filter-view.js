@@ -1,7 +1,7 @@
 import AbstractView from "./abstract-view";
 import {createProductsFilterMarkup} from "../markup/products-filter-markup";
 import {addDelegatedEventListener} from "../utils";
-import {QUERY_PARAM_TYPE, SPECIFIC_CATEGORY_FILTERS} from "../data/filters";
+import {QUERY_PARAM_TYPE, getCategoryFilters} from "../data/filters";
 import serialize from "form-serialize";
 import config from "../config";
 import SpecificFiltersView from "./specific-filters-view";
@@ -68,6 +68,25 @@ const ProductsFilterView = class extends AbstractView {
     priceRangeInput.step = config.PRICE_STEP;
   }
 
+  modifyBounds(valueBoundsMap) {
+    console.log(JSON.stringify(valueBoundsMap));
+    const fieldNames = Object.keys(valueBoundsMap);
+    fieldNames.forEach((fieldName) => {
+      const rangeInput = this.element.querySelector(`[name=${fieldName}]`);
+      if (rangeInput) {
+        const minValueSpan = this.element.querySelector(`.${fieldName}-range-min`);
+        const maxValueSpan = this.element.querySelector(`.${fieldName}-range-max`);
+        const rangeMin = valueBoundsMap[fieldName].min;
+        const rangeMax = valueBoundsMap[fieldName].max;
+        minValueSpan.innerText = rangeMin;
+        maxValueSpan.innerText = rangeMax;
+        rangeInput.min = rangeMin;
+        rangeInput.max = rangeMax;
+        rangeInput.value = rangeMin;
+      }
+    });
+  }
+
   removeSpecificFilters() {
     const specificFilters = this.element.querySelectorAll(`.specific-filters`);
     for (const filter of specificFilters) {
@@ -79,7 +98,7 @@ const ProductsFilterView = class extends AbstractView {
     const categoryElement = this.element.querySelector(`#category`);
     const productCategory = queryParams[QUERY_PARAM_TYPE.CATEGORY];
     this.removeSpecificFilters();
-    const filterDefinitions = SPECIFIC_CATEGORY_FILTERS[productCategory];
+    const filterDefinitions = getCategoryFilters(productCategory);
     categoryElement.insertAdjacentElement(`afterend`, (new SpecificFiltersView(filterDefinitions)).element);
   }
 

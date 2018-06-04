@@ -1,5 +1,5 @@
 import {cloneObject} from "../utils";
-import {SORT_TYPE, QUERY_PARAM_TYPE, CATEGORY} from "../data/filters";
+import {SORT_TYPE, QUERY_PARAM_TYPE, CATEGORY, getCategoryFilters, FILTER_HANDLER_MAP} from "../data/filters";
 import config from "../config";
 
 const COMPARE_FUNCTION = {
@@ -40,7 +40,25 @@ const ProductsListModel = class {
     if (queryParams[QUERY_PARAM_TYPE.FAVORITE]) {
       resultData = resultData.filter((item) => item.isFavorite);
     } else {
-      resultData = queryParams[QUERY_PARAM_TYPE.CATEGORY] === CATEGORY.ALL ? resultData : resultData.filter((item) => item.category === queryParams[QUERY_PARAM_TYPE.CATEGORY]);
+      const categoryParam = queryParams[QUERY_PARAM_TYPE.CATEGORY];
+      if (categoryParam !== CATEGORY.ALL) {
+        const categoryFilters = getCategoryFilters(categoryParam);
+        const specificFilters = categoryFilters.reduce((acc, filter) => {
+          if (queryParams[filter.fieldName]) {
+            acc.push(filter);
+          }
+          return acc;
+        }, []);
+        if (specificFilters.length) {
+          for (const specificFilter of specificFilters) {
+            const filterFunction = FILTER_HANDLER_MAP[specificFilter.type];
+            resultData = filterFunction(resultData, specificFilter.fieldName, queryParams[specificFilter.fieldName]);
+          }
+        } else {
+          resultData = resultData.filter((item) => item.category === categoryParam);
+        }
+      }
+
       const sortType = queryParams[QUERY_PARAM_TYPE.SORT];
       resultData = sortType === SORT_TYPE.POPULAR ? resultData : resultData.sort(COMPARE_FUNCTION[sortType]);
     }
