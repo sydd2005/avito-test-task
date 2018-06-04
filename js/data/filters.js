@@ -34,7 +34,7 @@ export const FILTER_HANDLER_MAP = {
       return products;
     }
     const choices = [].concat(choice);
-    return products.filter((product) => choices.includes(product[fieldName]));
+    return products.filter((product) => choices.includes(`` + product[fieldName]));
   },
   [FILTER_TYPE.MIN_OF_SET]: (products, fieldName, choice) => {
     if (!choice.length) {

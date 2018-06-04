@@ -24,12 +24,12 @@ const ProductsFilterView = class extends AbstractView {
   bind() {
     addDelegatedEventListener(`change`, `.products-filter`, (eventTarget) => {
       const formData = serialize(eventTarget, {hash: true});
+      location.hash = serialize(eventTarget, {disabled: true, hash: false});
       if (formData[QUERY_PARAM_TYPE.FAVORITE]) {
         this.disableAllFiltersExceptFavorites();
       } else {
         this.enableAllFilters();
       }
-      location.hash = serialize(eventTarget);
     });
   }
 
@@ -69,28 +69,36 @@ const ProductsFilterView = class extends AbstractView {
   }
 
   modifyBounds(valueBoundsMap) {
-    console.log(JSON.stringify(valueBoundsMap));
     const fieldNames = Object.keys(valueBoundsMap);
     fieldNames.forEach((fieldName) => {
       const rangeInput = this.element.querySelector(`[name=${fieldName}]`);
       if (rangeInput) {
-        const minValueSpan = this.element.querySelector(`.${fieldName}-range-min`);
-        const maxValueSpan = this.element.querySelector(`.${fieldName}-range-max`);
+        const minValueSpan = this.element.querySelector(`.${fieldName}-min`);
+        const maxValueSpan = this.element.querySelector(`.${fieldName}-max`);
         const rangeMin = valueBoundsMap[fieldName].min;
         const rangeMax = valueBoundsMap[fieldName].max;
         minValueSpan.innerText = rangeMin;
         maxValueSpan.innerText = rangeMax;
         rangeInput.min = rangeMin;
         rangeInput.max = rangeMax;
-        rangeInput.value = rangeMin;
+      }
+    });
+  }
+
+  initRanges(valueBoundsMap) {
+    const fieldNames = Object.keys(valueBoundsMap);
+    fieldNames.forEach((fieldName) => {
+      const rangeInput = this.element.querySelector(`[name=${fieldName}]`);
+      if (rangeInput) {
+        rangeInput.value = valueBoundsMap[fieldName].min;
       }
     });
   }
 
   removeSpecificFilters() {
-    const specificFilters = this.element.querySelectorAll(`.specific-filters`);
-    for (const filter of specificFilters) {
-      filter.parentNode.removeChild(filter);
+    const specificFiltersElement = this.element.querySelector(`.specific-filters`);
+    if (specificFiltersElement) {
+      specificFiltersElement.parentNode.removeChild(specificFiltersElement);
     }
   }
 

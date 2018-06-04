@@ -1,6 +1,6 @@
 import AbstractPresenter from "./abstract-presenter";
 import ProductsFilterView from "../views/products-filter-view";
-import {getQueryParams, isEmpty} from "../utils";
+import {getQueryParams} from "../utils";
 import ProductsFilterModel from "../models/products-filter-model";
 import {QUERY_PARAM_TYPE, SPECIFIC_FILTERS, FILTER_TYPE} from "../data/filters";
 
@@ -47,8 +47,11 @@ const ProductsFilterPresenter = class extends AbstractPresenter {
 
     window.addEventListener(`hashchange`, () => {
       const queryParams = getQueryParams(location.hash);
-      if (!isEmpty(queryParams) && queryParams[QUERY_PARAM_TYPE.CATEGORY] !== this._model.queryParams[QUERY_PARAM_TYPE.CATEGORY]) {
+      const queryCategory = queryParams[QUERY_PARAM_TYPE.CATEGORY];
+      const modelCategory = this._model.queryParams[QUERY_PARAM_TYPE.CATEGORY];
+      if (queryCategory && queryCategory !== modelCategory) {
         this._view.addSpecificFilters(queryParams);
+        this._view.initRanges(this._model.valueBoundsMap);
       }
       this._model.queryParams = queryParams;
       this._view.modifyBounds(this._model.valueBoundsMap);

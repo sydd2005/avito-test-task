@@ -55,9 +55,12 @@ const ProductsListModel = class {
             resultData = filterFunction(resultData, specificFilter.fieldName, queryParams[specificFilter.fieldName]);
           }
         } else {
-          resultData = resultData.filter((item) => item.category === categoryParam);
+          resultData = resultData.filter((product) => product.category === categoryParam);
         }
       }
+
+      const maxPriceParam = queryParams[QUERY_PARAM_TYPE.MAX_PRICE];
+      resultData = resultData.filter((product) => product.price <= maxPriceParam);
 
       const sortType = queryParams[QUERY_PARAM_TYPE.SORT];
       resultData = sortType === SORT_TYPE.POPULAR ? resultData : resultData.sort(COMPARE_FUNCTION[sortType]);

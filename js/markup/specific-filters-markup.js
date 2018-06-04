@@ -3,9 +3,9 @@ const createSpecificFilterMarkup = (filterDefinition) => {
   let filterMarkup = ``;
   if (!filterDefinition.values) {
     filterMarkup = `
-    <span class="price-range-min ${filterDefinition.fieldName}-range-min">0</span>
+    <span class="price-range-min ${filterDefinition.fieldName}-min">0</span>
     <input type="${filterDefinition.element}" name="${filterDefinition.fieldName}">
-    <span class="price-range-max ${filterDefinition.fieldName}-range-max">100</span>
+    <span class="price-range-max ${filterDefinition.fieldName}-max">100</span>
     `;
   } else {
     filterDefinition.values.forEach((value) => {
