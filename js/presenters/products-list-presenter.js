@@ -12,7 +12,6 @@ const ProductsListPresenter = class extends AbstractPresenter {
     this._model = new ProductsListModel();
     this._view = new ProductsListView();
     this.bind();
-    // this._model.adaptData();
   }
 
   bind() {

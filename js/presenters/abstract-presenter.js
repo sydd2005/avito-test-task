@@ -13,11 +13,6 @@ const AbstractPresenter = class {
   }
 
   show() {
-    // this._outlet.innerHTML = ``;
-    // const childElement = document.createElement(`div`);
-    // this._outlet.appendChild(childElement);
-    // childElement.replaceWith(...this._view.elements);
-    // this._view.elements = this._outlet.childNodes;
     this._outlet.replaceWith(this._view.element);
     this._outlet = this._view.element;
   }

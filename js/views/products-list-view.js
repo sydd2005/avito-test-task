@@ -14,7 +14,7 @@ const ProductsListView = class extends AbstractView {
 
   constructor() {
     super();
-    this._viewData = [];
+    this._viewData = null;
   }
 
   get template() {
