@@ -1,6 +1,8 @@
 import AbstractView from "./abstract-view";
 import {createProductsListMarkup} from "../markup/products-list-markup";
 import {generateRandomIndex, addDelegatedEventListener} from "../utils";
+import FullAdView from "./full-ad-view";
+import FullAdModel from "../models/full-ad-model";
 
 const TOP_LAYER_INDEX = 30;
 const MIDDLE_LAYER_INDEX = 20;
@@ -119,9 +121,22 @@ const ProductsListView = class extends AbstractView {
     });
   }
 
+  showFullAdModal(model) {
+    const fullAdModal = new FullAdView(model);
+    this.element.appendChild(fullAdModal.element);
+  }
+
   bind() {
     addDelegatedEventListener(`click`, `.product-favorite`, (eventTarget) => {
       this.onAddToFavoritesClick(eventTarget);
+    });
+
+    addDelegatedEventListener(`click`, `.product-title a`, async (eventTarget, event) => {
+      event.preventDefault();
+      const productId = eventTarget.dataset[`productId`];
+      const fullAdModel = new FullAdModel(productId);
+      await fullAdModel.update();
+      this.showFullAdModal(fullAdModel);
     });
   }
 

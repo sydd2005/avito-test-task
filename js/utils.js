@@ -11,7 +11,7 @@ export const addDelegatedEventListener = (eventType, targetSelector, eventHandle
     let currentTarget = evt.target;
     while (currentTarget && currentTarget !== elementToListen) {
       if (currentTarget.matches(targetSelector)) {
-        eventHandler(currentTarget);
+        eventHandler(currentTarget, evt);
         break;
       }
       currentTarget = currentTarget.parentNode;

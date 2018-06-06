@@ -19,9 +19,9 @@ const DataLoader = class {
     }
   }
 
-  static async load() {
+  static async load(url) {
     try {
-      const jsonResponse = await this.loadJson(config.PRODUCTS_URL);
+      const jsonResponse = await this.loadJson(url);
       return Promise.resolve(jsonResponse.data);
     } catch (error) {
       return Promise.reject(`Произошла ошибка в DataLoader.load(): ${error}`);

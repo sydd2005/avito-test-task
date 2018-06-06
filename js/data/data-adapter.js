@@ -62,6 +62,14 @@ const DataAdapter = class {
     return adaptedProduct;
   }
 
+  static async adaptFullProduct(product) {
+    const adaptedProduct = cloneObject(product);
+    adaptedProduct.fullAddress = await CoordinatesConverter.toShortAddress(product.address.lat, product.address.lng);
+    adaptedProduct.pictures = removeDoublePictures(product.pictures);
+    adaptedProduct.formattedPrice = formatPrice(product.price, RUB_SYMBOL);
+    return adaptedProduct;
+  }
+
   static async adaptForList(productsData) {
     favorites = JSON.parse(localStorage.getItem(config.LOCALSTORAGE_KEY)) || [];
     const adaptedData = await mapWithDelay(productsData, config.GEOCODE_CONSEQUENT_REQUEST_DELAY, this.adaptProduct);
