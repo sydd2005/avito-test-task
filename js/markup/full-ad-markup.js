@@ -26,16 +26,16 @@ export const createFullAdMarkup = (fullAdModel) => {
     <aside class="details-aside">
       <section class="details-address">
         <p class="details-address-text">${fullAdModel.fullAddress}</p>
-        <div class="details-address-map"></div>
+        <div class="details-address-map" data-lat="${fullAdModel.address.lat}" data-lng="${fullAdModel.address.lng}"></div>
       </section>
 
       <section class="details-seller">
         <a href="#" class="details-seller-link">
-          <h3 class="details-seller-name">Агентство недвижимости «Купчино»</h3>
+          <h3 class="details-seller-name">${fullAdModel.sellerName}</h3>
         </a>
 
-        <p class="details-seller-rating details-seller-rating-good">
-          рейтинг <span class="details-seller-rating-val">4.3</span>
+        <p class="details-seller-rating details-seller-rating-${fullAdModel.sellerRatingStyleModifier}">
+          рейтинг <span class="details-seller-rating-val">${fullAdModel.sellerRating}</span>
           <a href="#">Отзывы</a>
         </p>
       </section>

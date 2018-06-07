@@ -1,5 +1,3 @@
-import config from "../config";
-
 const checkStatus = (response) => {
   if (response.ok) {
     return response;
@@ -9,9 +7,9 @@ const checkStatus = (response) => {
 
 const DataLoader = class {
 
-  static async loadJson(url) {
+  static async loadJson(url, method = `GET`) {
     try {
-      const response = await window.fetch(url);
+      const response = await window.fetch(url, {method});
       const checkedResponse = await checkStatus(response);
       return checkedResponse.json();
     } catch (error) {

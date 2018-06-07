@@ -64,7 +64,8 @@ const DataAdapter = class {
 
   static async adaptFullProduct(product) {
     const adaptedProduct = cloneObject(product);
-    adaptedProduct.fullAddress = await CoordinatesConverter.toShortAddress(product.address.lat, product.address.lng);
+    const shouldIncludeCountry = true;
+    adaptedProduct.fullAddress = await CoordinatesConverter.toFullAddress(product.address.lat, product.address.lng, shouldIncludeCountry);
     adaptedProduct.pictures = removeDoublePictures(product.pictures);
     adaptedProduct.formattedPrice = formatPrice(product.price, RUB_SYMBOL);
     return adaptedProduct;

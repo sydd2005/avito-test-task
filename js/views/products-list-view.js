@@ -11,6 +11,7 @@ const OPACITY_STEP = 0.1;
 const CROSSFADE_TIME_STEP = 100;
 const PRODUCT_IMAGE_WIDTH = 120;
 const IMAGE_SWAP_DELAY = 3000;
+const KEYCODE_ESC = 27;
 
 const ProductsListView = class extends AbstractView {
 
@@ -126,6 +127,13 @@ const ProductsListView = class extends AbstractView {
     this.element.appendChild(fullAdModal.element);
   }
 
+  removeFullAdModal() {
+    const modal = this.element.querySelector(`.overlay`);
+    if (modal) {
+      modal.parentNode.removeChild(modal);
+    }
+  }
+
   bind() {
     addDelegatedEventListener(`click`, `.product-favorite`, (eventTarget) => {
       this.onAddToFavoritesClick(eventTarget);
@@ -138,6 +146,14 @@ const ProductsListView = class extends AbstractView {
       await fullAdModel.update();
       this.showFullAdModal(fullAdModel);
     });
+
+    ((productsListView) => {
+      window.addEventListener(`keydown`, function (event) {
+        if (event.keyCode === KEYCODE_ESC) {
+          productsListView.removeFullAdModal();
+        }
+      });
+    })(this);
   }
 
   onAddToFavoritesClick() {}

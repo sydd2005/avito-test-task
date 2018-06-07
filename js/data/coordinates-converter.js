@@ -2,14 +2,20 @@ import DataLoader from "./data-loader";
 import config from "../config";
 
 const ADDRESS_TYPE = {
+  STREET_NUMBER: `street_number`,
   STREET_ADDRESS: `street_address`,
   ROUTE: `route`,
   LOCALITY: `locality`,
+  COUNTRY: `country`,
   POLITICAL: `political`
 };
 
+const EXCESS_ADDRESS_INFO = `Unnamed Road`;
+const UNKNOWN_ADDRESS = `Адрес неизвестен`;
+
 const GEOCODE_LANGUAGE = `ru`;
 const GEOCODE_FILTER = `street_address|route|locality|political`;
+const GEOCODE_STATUS_OK = `OK`;
 
 const findLongName = (geocodeResults, desiredType) => {
   const searchResult = geocodeResults.find((result) => {
@@ -18,31 +24,59 @@ const findLongName = (geocodeResults, desiredType) => {
   let addressComponent;
   if (searchResult) {
     addressComponent = searchResult.address_components.find((component) => component.types.includes(desiredType));
-    addressComponent = addressComponent || searchResult.address_components.find((component) => component.types.includes(ADDRESS_TYPE.POLITICAL));
+    if (!addressComponent && desiredType === ADDRESS_TYPE.LOCALITY) {
+      addressComponent = addressComponent || searchResult.address_components.find((component) => component.types.includes(ADDRESS_TYPE.POLITICAL));
+    }
   }
   return addressComponent ? addressComponent.long_name : ``;
 };
 
-const addressCache = new Map();
+const getGeocodeResponse = async (lat, lng) => {
+  const latLng = `${lat},${lng}`;
+  const geocodeUrl = `${config.GEOCODE_URL_BASE}?latlng=${latLng}&key=${config.GEOCODE_KEY}&language=${GEOCODE_LANGUAGE}&result_type=${GEOCODE_FILTER}`;
+  return DataLoader.loadJson(geocodeUrl);
+};
+
+const getGeolocationCountry = async () => {
+  const geolocationUrl = `${config.GEOLOCATION_URL_BASE}?key=${config.GEOLOCATION_KEY}`;
+  const geolocationResponse = await DataLoader.loadJson(geolocationUrl, `POST`);
+  if (geolocationResponse.location) {
+    const {lat, lng} = geolocationResponse.location;
+    const geocodeResponse = await getGeocodeResponse(lat, lng);
+    if (geocodeResponse.status === GEOCODE_STATUS_OK) {
+      return findLongName(geocodeResponse.results, ADDRESS_TYPE.COUNTRY);
+    }
+  }
+  return null;
+};
 
 const CoordinatesConverter = class {
 
   static async toShortAddress(lat, lng) {
-    const latLng = `${lat},${lng}`;
-    let cachedResponse;
-    if (addressCache.has(latLng)) {
-      cachedResponse = addressCache.get(latLng);
-    }
-    const geocodeUrl = `${config.GEOCODE_URL_BASE}?latlng=${latLng}&key=${config.GEOCODE_KEY}&language=${GEOCODE_LANGUAGE}&result_type=${GEOCODE_FILTER}`;
-    const geocodeResponse = cachedResponse ? cachedResponse : await DataLoader.loadJson(geocodeUrl);
-    if (geocodeResponse.status === `OK`) {
-      addressCache.set(latLng, geocodeResponse);
+    const geocodeResponse = await getGeocodeResponse(lat, lng);
+    if (geocodeResponse.status === GEOCODE_STATUS_OK) {
       const cityName = findLongName(geocodeResponse.results, ADDRESS_TYPE.LOCALITY);
-      const streetName = findLongName(geocodeResponse.results, ADDRESS_TYPE.ROUTE).replace(`Unnamed Road`, ``);
+      const streetName = findLongName(geocodeResponse.results, ADDRESS_TYPE.ROUTE).replace(EXCESS_ADDRESS_INFO, ``);
       const shortAddress = [cityName, streetName].filter((item) => item).join(`, `);
-      return Promise.resolve(shortAddress || latLng);
+      return Promise.resolve(shortAddress);
     }
-    return Promise.resolve(`Адрес неизвестен`);
+    return Promise.resolve(UNKNOWN_ADDRESS);
+  }
+
+  static async toFullAddress(lat, lng) {
+    const geocodeResponse = await getGeocodeResponse(lat, lng);
+    const geolocationCountry = await getGeolocationCountry();
+    if (geocodeResponse.status === GEOCODE_STATUS_OK) {
+      const cityName = findLongName(geocodeResponse.results, ADDRESS_TYPE.LOCALITY);
+      const streetName = findLongName(geocodeResponse.results, ADDRESS_TYPE.ROUTE).replace(EXCESS_ADDRESS_INFO, ``);
+      const streetNumber = findLongName(geocodeResponse.results, ADDRESS_TYPE.STREET_NUMBER);
+      const adCountry = findLongName(geocodeResponse.results, ADDRESS_TYPE.COUNTRY);
+      const isSameCountry = geolocationCountry === adCountry;
+      const country = isSameCountry ? `` : adCountry;
+      const fullAddress = [country, cityName, streetName, streetNumber].filter((item) => item).join(`, `);
+      return Promise.resolve(fullAddress);
+    }
+    return Promise.resolve(UNKNOWN_ADDRESS);
   }
 
 };
