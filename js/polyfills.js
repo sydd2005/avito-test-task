@@ -1,3 +1,4 @@
+// источник: https://developer.mozilla.org/en-US/docs/Web/API/ChildNode/replaceWith
 function ReplaceWith(Ele) {
   'use-strict'; // For safari, and IE > 10
   let parent = this.parentNode,

@@ -33,12 +33,7 @@ const FullAdView = class extends AbstractView {
       center: centerPoint
     });
 
-    (() => {
-      return new google.maps.Marker({
-        position: centerPoint,
-        map,
-      });
-    })();
+    (() => new google.maps.Marker({position: centerPoint, map}))();
 
   }
 

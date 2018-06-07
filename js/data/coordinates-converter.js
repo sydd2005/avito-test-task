@@ -33,7 +33,7 @@ const findLongName = (geocodeResults, desiredType) => {
 
 const getGeocodeResponse = async (lat, lng) => {
   const latLng = `${lat},${lng}`;
-  const geocodeUrl = `${config.GEOCODE_URL_BASE}?latlng=${latLng}&key=${config.GEOCODE_KEY}&language=${GEOCODE_LANGUAGE}&result_type=${GEOCODE_FILTER}`;
+  const geocodeUrl = `${config.GEOCODE_URL_BASE}?latlng=${latLng}&key=${config.MAPS_API_KEY}&language=${GEOCODE_LANGUAGE}&result_type=${GEOCODE_FILTER}`;
   return DataLoader.loadJson(geocodeUrl);
 };
 
@@ -64,19 +64,29 @@ const CoordinatesConverter = class {
   }
 
   static async toFullAddress(lat, lng) {
-    const geocodeResponse = await getGeocodeResponse(lat, lng);
-    const geolocationCountry = await getGeolocationCountry();
-    if (geocodeResponse.status === GEOCODE_STATUS_OK) {
-      const cityName = findLongName(geocodeResponse.results, ADDRESS_TYPE.LOCALITY);
-      const streetName = findLongName(geocodeResponse.results, ADDRESS_TYPE.ROUTE).replace(EXCESS_ADDRESS_INFO, ``);
-      const streetNumber = findLongName(geocodeResponse.results, ADDRESS_TYPE.STREET_NUMBER);
-      const adCountry = findLongName(geocodeResponse.results, ADDRESS_TYPE.COUNTRY);
-      const isSameCountry = geolocationCountry === adCountry;
-      const country = isSameCountry ? `` : adCountry;
-      const fullAddress = [country, cityName, streetName, streetNumber].filter((item) => item).join(`, `);
-      return Promise.resolve(fullAddress);
-    }
-    return Promise.resolve(UNKNOWN_ADDRESS);
+    // let geocodeResponse = await getGeocodeResponse(lat, lng);
+    // let geolocationCountry = await getGeolocationCountry();
+    // let geolocationCountry;
+    // let geocodeResponse;
+    return new Promise((resolve) => {
+      Promise.all([
+        getGeolocationCountry(),
+        getGeocodeResponse(lat, lng)
+      ]
+      ).then(([geolocationCountry, geocodeResponse]) => {
+        if (geocodeResponse.status === GEOCODE_STATUS_OK) {
+          const cityName = findLongName(geocodeResponse.results, ADDRESS_TYPE.LOCALITY);
+          const streetName = findLongName(geocodeResponse.results, ADDRESS_TYPE.ROUTE).replace(EXCESS_ADDRESS_INFO, ``);
+          const streetNumber = findLongName(geocodeResponse.results, ADDRESS_TYPE.STREET_NUMBER);
+          const adCountry = findLongName(geocodeResponse.results, ADDRESS_TYPE.COUNTRY);
+          const isSameCountry = geolocationCountry === adCountry;
+          const country = isSameCountry ? `` : adCountry;
+          const fullAddress = [country, cityName, streetName, streetNumber].filter((item) => item).join(`, `);
+          resolve(fullAddress);
+        }
+        resolve(UNKNOWN_ADDRESS);
+      });
+    });
   }
 
 };

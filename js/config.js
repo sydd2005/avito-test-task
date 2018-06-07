@@ -3,10 +3,12 @@ const config = {
   SELLERS_URL: `https://avito.dump.academy/sellers`,
   MAPS_URL_BASE: `https://www.google.com/maps/search`,
   GEOCODE_URL_BASE: `https://maps.googleapis.com/maps/api/geocode/json`,
-  GEOCODE_KEY: `AIzaSyAMg9lI7Ox-AjTM3j3vT_LupmaG37jXAnA`,
+  MAPS_API_KEY: `AIzaSyAMg9lI7Ox-AjTM3j3vT_LupmaG37jXAnA`,
   GEOCODE_CONSEQUENT_REQUEST_DELAY: 21,
   GEOLOCATION_URL_BASE: `https://www.googleapis.com/geolocation/v1/geolocate`,
-  GEOLOCATION_KEY: `AIzaSyDP2gm2m1Qu_vRNDMaUwEq9y8_w-A3FwCE`,
+  GEOLOCATION_KEY: `AIzaSyAMg9lI7Ox-AjTM3j3vT_LupmaG37jXAnA`,
+  // GEOLOCATION_KEY: `AIzaSyDP2gm2m1Qu_vRNDMaUwEq9y8_w-A3FwCE`,
+  // AIzaSyD7NflHQj55_HiG4LZOcK6fVVQ_5BDw8NQ
   LOCALSTORAGE_KEY: `avito-test-task-favorites`,
   PRICE_STEP: 500,
 };
