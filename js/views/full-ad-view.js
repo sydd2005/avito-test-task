@@ -48,7 +48,7 @@ const FullAdView = class extends AbstractView {
       const lat = mapElement.dataset[`lat`];
       const lng = mapElement.dataset[`lng`];
       window.open(`${config.MAPS_URL_BASE}/${lat},${lng}`, `_blank`);
-    });
+    }, this.element);
   }
 };
 

@@ -64,10 +64,6 @@ const CoordinatesConverter = class {
   }
 
   static async toFullAddress(lat, lng) {
-    // let geocodeResponse = await getGeocodeResponse(lat, lng);
-    // let geolocationCountry = await getGeolocationCountry();
-    // let geolocationCountry;
-    // let geocodeResponse;
     return new Promise((resolve) => {
       Promise.all([
         getGeolocationCountry(),
